@@ -13,6 +13,9 @@ from os.path import join, basename
 script_directory = os.path.dirname(os.path.abspath(__file__))
 print(script_directory)
 
+java = join(script_directory, "lib/jdk-11.0.13/bin/java")
+blip = join(script_directory, "lib/blip/blip.jar") 
+
 #if not os.path.exists("./lib/jdk-11.0.13+8/bin/java"): # ORIGINAL
 if not os.path.exists(join(script_directory, "lib/jdk-11.0.13/bin/java")): # Change for local lhvu setup
     raise RuntimeError("java not found. Please download it from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html")
@@ -31,13 +34,16 @@ def generate_dat(df: pd.DataFrame, tmp: tempfile.TemporaryDirectory):
     with open(dat_path, "w") as f:
         # print(out_str)
         f.write(out_str)
+    
+    return dat_path
 
 def parent_set_iden(tmp: tempfile.TemporaryDirectory):
     # java -jar blip.jar scorer.is -d data/child-5000.dat -j data/child-5000.jkl -t 10 -b 0 
     dat_path = os.path.join(tmp, f"data.dat")
     jkl_path = os.path.join(tmp, f"parent_set.jkl")
 
-    os.system(f"./lib/jdk-11.0.13+8/bin/java -Xmx200G -jar ./lib/blip/blip.jar scorer.is -d {dat_path} -j {jkl_path} -t {TIMEOUT1} -b 0")
+    #os.system(f"./lib/jdk-11.0.13+8/bin/java -Xmx200G -jar ./lib/blip/blip.jar scorer.is -d {dat_path} -j {jkl_path} -t {TIMEOUT1} -b 0")
+    os.system(f"{java} -Xmx200G -jar {blip} scorer.is -d {dat_path} -j {jkl_path} -t {TIMEOUT1} -b 0")
 
     if not os.path.exists(jkl_path):
         print("failed")
@@ -49,7 +55,8 @@ def general_struc_opt(tmp: tempfile.TemporaryDirectory):
     jkl_path = os.path.join(tmp, f"parent_set.jkl")
     res_path = os.path.join(tmp, f"graph.res")
 
-    os.system(f"./lib/jdk-11.0.13+8/bin/java -Xmx200G -jar ./lib/blip/blip.jar solver.winasobs.adv -smp ent  -d {dat_path} -j {jkl_path} -r {res_path} -t {TIMEOUT2} -b 0")
+    #os.system(f"./lib/jdk-11.0.13+8/bin/java -Xmx200G -jar ./lib/blip/blip.jar solver.winasobs.adv -smp ent  -d {dat_path} -j {jkl_path} -r {res_path} -t {TIMEOUT2} -b 0")
+    os.system(f"{java} -Xmx200G -jar {blip} solver.winasobs.adv -smp ent  -d {dat_path} -j {jkl_path} -r {res_path} -t {TIMEOUT2} -b 0")
 
     if not os.path.exists(res_path):
         print("failed")
@@ -58,6 +65,7 @@ def parse_res_file(col_names: List[str], tmp: tempfile.TemporaryDirectory) -> Li
     res_path = os.path.join(tmp, f"graph.res")
     with open(res_path) as f:
         lines = [l.strip() for l in f.readlines() if not l.startswith("Score") and l.strip() != ""]
+
     skeleton = []
     for line in lines:
         if "(" not in line: continue
@@ -68,6 +76,7 @@ def parse_res_file(col_names: List[str], tmp: tempfile.TemporaryDirectory) -> Li
         for p in parent_raw:
             parent = col_names[int(p)]
             skeleton.append((child, parent))
+            
     return skeleton
 
 def skeleton_learning(df: pd.DataFrame, is_small: bool=False) -> List[Tuple[str, str]]:
@@ -78,10 +87,11 @@ def skeleton_learning(df: pd.DataFrame, is_small: bool=False) -> List[Tuple[str,
     else:
         TIMEOUT1 = 600
         TIMEOUT2 = 1000
-    with tempfile.TemporaryDirectory() as tmp:
-        logging.info("LEARNING SKELETON [BLIP]")
-        generate_dat(df, tmp)
-        parent_set_iden(tmp)
-        general_struc_opt(tmp)
-        skl = parse_res_file(df.columns ,tmp)
+
+    tmp = join(script_directory, "tmp")
+    logging.info("LEARNING SKELETON [BLIP]")
+    generate_dat(df, tmp)
+    parent_set_iden(tmp)
+    general_struc_opt(tmp)
+    skl = parse_res_file(df.columns, tmp)
     return skl

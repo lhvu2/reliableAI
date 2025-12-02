@@ -10,3 +10,9 @@
 
 With this setup, Synthetic `run_one(node_num=5, idx=2)` runs successfully.
 
+### Main changed points
+
+- reduce simulated/synthetic data to 1000 rows
+- simulate 5 node graph
+- disable REAL as it is not available, not open source, only on Windows
+- trying with blip for run_one2: `Synthetic.py: sl_algo = "blip", run_one2(node_num=node_num, idx=idx, sl_algo=sl_algo)`

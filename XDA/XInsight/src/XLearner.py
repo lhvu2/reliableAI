@@ -94,9 +94,9 @@ class XLearner:
         elif self.sl_algo.lower() == "blip-fast":
             skeleton = blip_sl(df, True)
             csm_edges = xlearner(dataset, df.columns, skeleton=skeleton, depth=3)
-        elif self.sl_algo.lower() == "real":
-            skeleton = real_sl(df)
-            csm_edges = xlearner(dataset, df.columns, skeleton=skeleton)
+        # elif self.sl_algo.lower() == "real":
+        #     skeleton = real_sl(df)
+        #     csm_edges = xlearner(dataset, df.columns, skeleton=skeleton)
         elif self.sl_algo.lower() == "file":
             skeleton = XLearner.sl_from_file(self.sl_file, self.df, df.columns)
             csm_edges = xlearner(dataset, df.columns, skeleton=skeleton)

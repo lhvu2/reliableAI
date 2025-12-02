@@ -159,7 +159,8 @@ def simulate_graph(node_num:int, edge_num:int, graph_type:str):
     logging.info("GENERATE SYNTHETIC DAG")
     B = simulate_dag(node_num, edge_num, graph_type)
     logging.info("FORWARD SAMPLING")
-    data, fd_edges = simulate_discrete(B, n=10000)
+    #data, fd_edges = simulate_discrete(B, n=10000)
+    data, fd_edges = simulate_discrete(B, n=1000)
     nodes = []
     node_num = B.shape[0]
     for i in range(node_num):
@@ -266,7 +267,9 @@ def run_one(node_num, idx):
     df.to_csv(dataset_path, index=False)
     return 0
 
-def run_one2(node_num, idx):
+def run_one2(node_num, idx, sl_algo:str="default"):
+    assert sl_algo in ["default", "blip"]
+
     dataset_path = join(script_directory, f"data/synthetic/{node_num}-{idx}.csv")
     pag_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-pag.pkl")
     fd_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-fd.pkl")
@@ -277,7 +280,7 @@ def run_one2(node_num, idx):
     with open(fd_path, "rb") as f:
         fd_edges = pickle.load(f)
     from src.XLearner import XLearner
-    xl = XLearner(dataset_path, fd_edges=fd_edges)
+    xl = XLearner(dataset_path, fd_edges=fd_edges, sl_algo=sl_algo)
     with open(xl_path, "wb") as f:
         pickle.dump(xl, f)
     true_edges = get_pag_edges(pag)
@@ -315,4 +318,9 @@ if __name__ == "__main__":
     node_num=5
     idx=2
     run_one(node_num=node_num, idx=idx)
-    run_one2(node_num=node_num, idx=idx)
+    
+    #sl_algo = "default"
+    #run_one2(node_num=node_num, idx=idx, sl_algo=sl_algo)
+    
+    sl_algo = "blip"
+    run_one2(node_num=node_num, idx=idx, sl_algo=sl_algo)
