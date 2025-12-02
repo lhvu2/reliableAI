@@ -11,7 +11,7 @@ from src.FCI import xlearner
 from src.CausalSemanticModel import CausalSemanticModel
 from src.DiffQuery import DiffQuery
 from src.BLIP import skeleton_learning as blip_sl
-from src.REAL import skeleton_learning as real_sl
+#from src.REAL import skeleton_learning as real_sl
 from src.Utils import *
 from src.logger import *
 from src.Search import SumSearch, AvgSearch

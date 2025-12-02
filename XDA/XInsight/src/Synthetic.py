@@ -267,10 +267,11 @@ def run_one(node_num, idx):
     return 0
 
 def run_one2(node_num, idx):
-    dataset_path = f"data/synthetic/{node_num}-{idx}.csv"
-    pag_path = f"data/synthetic/{node_num}-{idx}-pag.pkl"
-    fd_path = f"data/synthetic/{node_num}-{idx}-fd.pkl"
-    xl_path = f"data/synthetic/{node_num}-{idx}-xl.pkl"
+    dataset_path = join(script_directory, f"data/synthetic/{node_num}-{idx}.csv")
+    pag_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-pag.pkl")
+    fd_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-fd.pkl")
+    xl_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-xl.pkl")
+
     with open(pag_path, "rb") as f:
         pag = pickle.load(f)
     with open(fd_path, "rb") as f:
@@ -311,4 +312,7 @@ def run_fci_star(a_b):
     return run_fci(*a_b)
 
 if __name__ == "__main__":
-    run_one(node_num=5, idx=2)
+    node_num=5
+    idx=2
+    run_one(node_num=node_num, idx=idx)
+    run_one2(node_num=node_num, idx=idx)
