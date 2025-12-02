@@ -7,10 +7,11 @@ import pandas as pd
 import os, tempfile
 from src.logger import *
 
-if os.path.exists("./lib/jdk-11.0.13+8/bin/java"):
+#if not os.path.exists("./lib/jdk-11.0.13+8/bin/java"): # ORIGINAL
+if not os.path.exists("./lib/jdk-11.0.13/bin/java"): # Change for local lhvu setup
     raise RuntimeError("java not found. Please download it from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html")
 
-if os.path.exists("./lib/blip/blip.jar"):
+if not os.path.exists("./lib/blip/blip.jar"):
     raise RuntimeError("blip.jar not found. Please download it from https://github.com/mauro-idsia/blip")
 
 

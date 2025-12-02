@@ -12,7 +12,8 @@ import pandas as pd
 from tqdm import tqdm
 from p_tqdm import p_umap
 import pickle
-sys.path.append(os.path.dirname(os.getcwd()))
+#sys.path.append(os.path.dirname(os.getcwd()))
+sys.path.append(os.getcwd())  # not dirname
 import igraph as ig
 import numpy as np
 from scipy.stats import truncnorm
@@ -29,6 +30,12 @@ from src.FCI import get_color_edges
 from src.CausalSemanticModel import Edge
 from src.logger import logging
 import src.CausalSemanticModel as CSM
+
+import os
+from os.path import join, basename
+
+script_directory = os.path.dirname(os.path.abspath(__file__))
+print(script_directory)
 
 def is_dag(W):
     G = ig.Graph.Weighted_Adjacency(W.tolist())
@@ -245,9 +252,9 @@ def compare_pag(est_edges: List[Edge], true_edges: List[Edge], partial: bool=Tru
     return {"f1": f1, "precision": precision, "recall": recall, "skl_f1": skl_f1, "skl_precision": skl_precision, "skl_recall": skl_recall}
 
 def run_one(node_num, idx):
-    dataset_path = f"data/synthetic/{node_num}-{idx}.csv"
-    pag_path = f"data/synthetic/{node_num}-{idx}-pag.pkl"
-    fd_path = f"data/synthetic/{node_num}-{idx}-fd.pkl"
+    dataset_path = join(script_directory, f"data/synthetic/{node_num}-{idx}.csv")
+    pag_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-pag.pkl")
+    fd_path = join(script_directory, f"data/synthetic/{node_num}-{idx}-fd.pkl")
     
     # with open(pag_path, "rb") as f:
     #     pag = pickle.load(f)
@@ -302,3 +309,6 @@ def run_one_star(a_b):
 
 def run_fci_star(a_b):
     return run_fci(*a_b)
+
+if __name__ == "__main__":
+    run_one(node_num=5, idx=2)
